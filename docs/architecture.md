@@ -1,31 +1,53 @@
-# System Architecture
+/**
+ * System Monitoring Script
+ * Supports both production and development modes
+ */
 
-## Overview
-DevOps Simulator follows a microservices architecture designed for high availability and scalability.
+const ENV = process.env.NODE_ENV || 'production';
 
-## Components
+const monitorConfig = {
+  production: {
+    interval: 60000,
+    alertThreshold: 80,
+    debugMode: false
+  },
+  development: {
+    interval: 5000,
+    alertThreshold: 90,
+    debugMode: true,
+    verboseLogging: true
+  }
+};
 
-### 1. Application Server
-- **Technology**: Node.js + Express
-- **Port**: 8080
-- **Scaling**: Horizontal auto-scaling enabled
+const config = monitorConfig[ENV];
 
-### 2. Database Layer
-- **Database**: PostgreSQL 14
-- **Configuration**: Master-slave replication
-- **Backup**: Daily automated backups
+console.log('=================================');
+console.log(`DevOps Simulator - Monitor`);
+console.log(`Environment: ${ENV}`);
+console.log(`Debug: ${config.debugMode ? 'ENABLED' : 'DISABLED'}`);
+console.log('=================================');
 
-### 3. Monitoring System
-- **Tool**: Prometheus + Grafana
-- **Metrics**: CPU, Memory, Disk, Network
-- **Alerts**: Email notifications for critical issues
+function checkSystemHealth() {
+  const timestamp = new Date().toISOString();
+  
+  if (config.debugMode) {
+    console.log(`\n[${timestamp}] === DETAILED HEALTH CHECK ===`);
+  } else {
+    console.log(`[${timestamp}] Checking system health...`);
+  }
+  
+  console.log('✓ CPU usage: Normal');
+  console.log('✓ Memory usage: Normal');
+  console.log('✓ Disk space: Adequate');
+  
+  if (config.debugMode) {
+    console.log('✓ Hot reload: Active');
+    console.log('✓ Debug port: 9229');
+  }
+  
+  console.log('System Status: HEALTHY');
+}
 
-## Deployment Strategy
-- **Method**: Rolling updates
-- **Zero-downtime**: Yes
-- **Rollback**: Automated on failure
-
-## Security
-- SSL/TLS encryption
-- Database connection encryption
-- Regular security audits
+console.log(`Monitoring every ${config.interval}ms`);
+setInterval(checkSystemHealth, config.interval);
+checkSystemHealth();
